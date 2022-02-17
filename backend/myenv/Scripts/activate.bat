@@ -1,6 +1,6 @@
 @echo off
 
-set "VIRTUAL_ENV=C:\Users\dimit\Desktop\tasklist_django\backend\myenv"
+set "VIRTUAL_ENV=C:\Users\dimit\Desktop\django-tasklist\backend\myenv"
 
 if defined _OLD_VIRTUAL_PROMPT (
     set "PROMPT=%_OLD_VIRTUAL_PROMPT%"

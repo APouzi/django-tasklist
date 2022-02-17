@@ -20,7 +20,7 @@ from taskList import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/',  views.MyTokenObtainPairView.as_view()),
-    path('register/', views.registerUser),
+    path('register/', views.RegisterUser.as_view()),
     path('tasklist/', views.GetTaskList.as_view()),
     path('tasklist/create-post/', views.CreateTask.as_view()),
     path('tasklist/update/', views.UpdateTask.as_view()),

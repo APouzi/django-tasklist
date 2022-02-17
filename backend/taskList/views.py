@@ -1,7 +1,7 @@
 from django.http import request
 from django.shortcuts import render
 # from backend.taskList.models import Task
-from .serializers import UserSerializerWithToken, UserSerializer, TaskSerializer
+from .serializers import UserSerializerWithToken, UserSerializer, TaskSerializer, TaskListSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -12,11 +12,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-from rest_framework import status
-from rest_framework.generics import ListAPIView, CreateAPIView
+# from rest_framework import status
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 
 # Models
-from .models import Task
+from .models import Task, UserTaskList
 
 from rest_framework import permissions
 
@@ -40,20 +40,26 @@ class MyTokenObtainPairView(TokenObtainPairView):
 # Create your views here.
 
 
-@api_view(['POST'])
-def registerUser(request):
-    try:
-        data = request.data
-        user = User.objects.create(
-            username = data['email'],
-            email = data['email'],
-            password = make_password(data['password'])
-        )
-        serializer = UserSerializerWithToken(user, many = False)
-        return Response(serializer.data)
-    except:
-        message = {'details':'User with this email already exists'}
-        return Response(message, status = status.HTTP_400_BAD_REQUEST)
+# @api_view(['POST'])
+# def registerUser(request):
+#     try:
+#         data = request.data
+#         user = User.objects.create(
+#             username = data['email'],
+#             email = data['email'],
+#             password = make_password(data['password'])
+#         )
+#         serializer = UserSerializerWithToken(user, many = False)
+#         return Response(serializer.data)
+#     except:
+#         message = {'details':'User with this email already exists'}
+#         return Response(message, status = status.HTTP_400_BAD_REQUEST)
+
+class RegisterUser(CreateAPIView):
+    permission_classes = ([permissions.AllowAny])
+    serializer_class = UserSerializerWithToken
+    queryset = User
+
 
 # class SnippetList(APIView):
 #     def post(self, request, format=None):
@@ -86,12 +92,12 @@ def registerUser(request):
 #         return Response(serializer.data)
 
 class GetTaskList(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = ([permissions.IsAuthenticated])
     serializer_class = TaskSerializer
     
     def get_queryset(self):
-        user = self.request.user
-        return user.task_set.all()
+        list1 = UserTaskList.objects.get(user = self.request.user)
+        return list1.task_set.all()
     
     
 
@@ -113,19 +119,19 @@ class UpdateTask(UpdateAPIView):
         return data
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def createTask(request):
-    user = request.user
-    data = request.data
-    product = Task.objects.create(
-        user = user,
-        title = data['title'],
-        body = ['title'],
-    )
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def createTask(request):
+#     user = request.user
+#     data = request.data
+#     product = Task.objects.create(
+#         user = user,
+#         title = data['title'],
+#         body = ['title'],
+#     )
 
-    serializer = TaskSerializer(product, many = False)
-    return Response(serializer.data)
+#     serializer = TaskSerializer(product, many = False)
+#     return Response(serializer.data)
 
         
 
